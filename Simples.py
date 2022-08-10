@@ -7,7 +7,21 @@ import numpy as np
 # 1 : Determine inicialmente uma partição básica factível
 
 def leitura():
-    return
+    
+    lin = 0 
+    funcao_grudada = []
+    funcao = []
+
+    print('leituras de meu pau: ')
+    
+    print('linhas da matriz A' )
+    lin = int(input())
+
+    for i in range(lin):
+        print("digite a funcao boco: ")
+        funcao_grudada.append(input())
+        funcao.append(funcao_grudada[i].split(' '))
+    return funcao
 
 # 2 : Faça iteração ← 1
 
