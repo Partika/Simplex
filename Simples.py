@@ -1,4 +1,5 @@
 # Integrantes: Matheus Partika Orzechowski, Leonardo Pães, Piasinho
+from tkinter.tix import MAX
 import numpy as np
 
 
@@ -9,20 +10,22 @@ import numpy as np
 def leitura():
     return
 
-def attBasica(A,B):
-    basica=[]
+
+def attBasica(A, b):
+    basica = []
     for i in range(len(A)):
-        lin=[]
-        for j in B:
+        lin = []
+        for j in b:
             lin.append(A[i][j])
         basica.append(lin)
     return basica
 
-def attNaoBasica(A,N):
-    naoBasica=[]
+
+def attNaoBasica(A, n):
+    naoBasica = []
     for i in range(len(A)):
-        lin=[]
-        for j in N:
+        lin = []
+        for j in n:
             lin.append(A[i][j])
         naoBasica.append(lin)
     return naoBasica
@@ -140,25 +143,54 @@ def custoRelativo():
     # 2.3 : determinação da variavel a entrar na base
 
 
-def custoMinimo():
-    return
+def custoMinimo(CN):
+    # retorna indice minimo da funcao anterior
+    menor = min(CN)
+    return CN.index(menor)
 
     # Passo 3 : teste de otimalidade
 
 
-def otimalidade():
-    return
+def otimalidade(k, custoRelativo):
+    if custoRelativo[k] > 0:
+        return True
+    else:
+        return False
 
     # Passo 4 : calculo da direcao simplex
 
 
-def calculoDeY():
-    return
+def calculoDeY(B, A, n, k):
+    inv=inversa(B)
+    a=[]
+    for i in range(len(A)):
+        a.append(A[i][n[k]])
+    y=multMat(inv, a)
+    return y
 
     # Passo 5 : determinacao do passo e variavel a sair da base
 
 
+def passoEL(y, xRelativo):
+    possivel=False
+    for i in y:
+        if i>0:
+            possivel=True
+            break
+    if(not(possivel)):
+        return False
+    vet=[]
+    for i in range(len(y)):
+        if(y<=0):
+            vet.append(MAX)
+            continue
+        vet.append(xRelativo[i]/y[i])
+    passo=min(vet)
+    l=vet.index(passo)
+    return True, passo, l
+
 def calculoDeL():
+    
     return
 
     # Passo 6 : nova partição básica, troque a coluna l de B pela coluna k de N
