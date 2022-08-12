@@ -26,6 +26,7 @@ def leitura():
 
 
 def attBasica(A, b):
+    # calculo da matriz basica
     basica = []
     for i in range(len(A)):
         lin = []
@@ -36,6 +37,7 @@ def attBasica(A, b):
 
 
 def attNaoBasica(A, n):
+    # calculo da matriz nao basica
     naoBasica = []
     for i in range(len(A)):
         lin = []
@@ -64,6 +66,7 @@ def XRelativoBasico(mat, b):
 
 
 def XRelativoNaoBasico(tam):
+    # basicamente um vetor nulo
     relativoN = []
     for i in range(tam):
         relativoN.append(0)
@@ -116,10 +119,12 @@ def transposta(mat):
     transp = []
     lin = []
     tam = len(mat)
+    # criacao inicial da transposta
     for i in range(tam):
         lin.append(0)
     for i in range(tam):
         transp.append(lin)
+    # calculo da transposta
     for i in range(tam):
         for j in range(tam):
             transp[j][i] = mat[i][j]
@@ -129,12 +134,14 @@ def transposta(mat):
 def multMat(A, B):
     c = []
     tam = len(A)
-    tam2 = len(B)
+    tam2 = len(B[0])
     lin = []
+    # criacao do c
     for i in range(tam):
         lin.append(0)
     for j in range(tam2):
         c.append(lin)
+    # multiplicacao em si
     for i in range(tam):
         for k in range(tam):
             for j in range(tam2):
@@ -151,8 +158,15 @@ def calculaLambda(B, c):
     # 2.2 : custos relativos
 
 
-def custoRelativo():
-    return
+def custoRelativo(custo_naoB, lamb, nao_basico):
+    custo_relativo_naoB = []
+    tam = len(custo_naoB)
+    naoBasico = transposta(nao_basico)
+    # itera pela coluna
+    for i in range(tam):
+        custo_relativo_naoB.append(
+            custo_naoB[i] - multMat(lamb, transposta(naoBasico[i])))
+    return custo_relativo_naoB
 
     # 2.3 : determinação da variavel a entrar na base
 
@@ -166,6 +180,7 @@ def custoMinimo(CN):
 
 
 def otimalidade(k, custoRelativo):
+    # se k maior que 0, ta tudo bem
     if custoRelativo[k] > 0:
         return True
     else:
@@ -175,36 +190,42 @@ def otimalidade(k, custoRelativo):
 
 
 def calculoDeY(B, A, n, k):
-    inv=inversa(B)
-    a=[]
+    inv = inversa(B)
+    a = []
+    # coluna k da matriz nao basica
     for i in range(len(A)):
         a.append(A[i][n[k]])
-    y=multMat(inv, a)
+    y = multMat(inv, a)
     return y
 
     # Passo 5 : determinacao do passo e variavel a sair da base
 
 
 def passoEL(y, xRelativo):
-    possivel=False
+    # se tem pelo menos 1 y maior que 0
+    possivel = False
     for i in y:
-        if i>0:
-            possivel=True
+        if i > 0:
+            possivel = True
             break
     if(not(possivel)):
         return False
-    vet=[]
+    # calculo do vetor das divisoes
+    vet = []
     for i in range(len(y)):
-        if(y<=0):
+        if(y <= 0):
             vet.append(MAX)
             continue
         vet.append(xRelativo[i]/y[i])
-    passo=min(vet)
-    l=vet.index(passo)
+    # selecao do passo
+    passo = min(vet)
+    # qual a posicao do passo?
+    l = vet.index(passo)
     return True, passo, l
 
+
 def calculoDeL():
-    
+
     return
 
     # Passo 6 : nova partição básica, troque a coluna l de B pela coluna k de N
