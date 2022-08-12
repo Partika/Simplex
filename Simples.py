@@ -1,4 +1,4 @@
-# Integrantes: Matheus Partika Orzechowski, Leonardo Pães, Piasinho
+# Integrantes: Matheus Partika Orzechowski, Jose Leonardo Machado Pães, Samuel Piasinho
 from tkinter.tix import MAX
 import numpy as np
 
@@ -8,14 +8,16 @@ import numpy as np
 # 1 : Determine inicialmente uma partição básica factível
 
 def leitura():
-    
-    lin = 0 
+    # ler funcao z, 
+    # ler matriz das funcoes (multiplicador das variaveis basicas e nao basicas),
+    # ler matriz b (um vetor / uma coluna)
+    lin = 0
     funcao_grudada = []
     funcao = []
 
     print('leituras de meu pau: ')
-    
-    print('linhas da matriz A' )
+
+    print('linhas da matriz A')
     lin = int(input())
 
     for i in range(lin):
@@ -87,7 +89,7 @@ def inversa(mat):
     # verificacao do determinante
     if(np.linalg.det(mat) == 0):
         return False
-    inv = [[1, 0, 0][0, 1, 0][0, 0, 1]]
+    inv = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
     tam = len(mat)
     # eliminacao de gauss jordan
     for i in range(tam):
@@ -235,4 +237,9 @@ def troca(B, N, l, k):
     swap(B[l], N[k])
     return
 
+
 # 3 : Calcule o valor da função objetivo
+
+def valorFuncao(z, mat):
+    
+    return
