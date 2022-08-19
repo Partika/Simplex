@@ -8,7 +8,7 @@ import numpy as np
 # 1 : Determine inicialmente uma partição básica factível
 
 def leitura():
-    # ler funcao z, 
+    # ler funcao z,
     # ler matriz das funcoes (multiplicador das variaveis basicas e nao basicas),
     # ler matriz b (um vetor / uma coluna)
     lin = 0
@@ -78,6 +78,12 @@ def XRelativoNaoBasico(tam):
 
     # 2.1 : vetor multiplicador simplex
 
+
+def custoBasico(z, b):
+    custoB=[]
+    for i in b:
+        custoB.append(z[i])
+    return custoB
 
 def swap(a, b):
     aux = b
@@ -225,21 +231,49 @@ def passoEL(y, xRelativo):
     l = vet.index(passo)
     return True, passo, l
 
-
-def calculoDeL():
-
-    return
-
     # Passo 6 : nova partição básica, troque a coluna l de B pela coluna k de N
 
 
-def troca(B, N, l, k):
-    swap(B[l], N[k])
+def troca(A, B, b, N, n, l, k):
+    swap(b[l], n[k])
+    B = attBasica(A, b)
+    N = attNaoBasica(A, n)
     return
 
 
 # 3 : Calcule o valor da função objetivo
 
 def valorFuncao(z, mat):
-    
+
     return
+
+
+# main
+def main():
+    A, B, b, n, z = leitura()
+    basica = attBasica(A, b)
+    naoBasica = attNaoBasica(A, n)
+    it = 0
+    possivel=True
+    while(True and it < 10):
+        xRelativo = XRelativoBasico(basica, B)
+        lambida = calculaLambda(basica, custoBasico(z, b))
+        cRelativo = custoRelativo(
+            XRelativoNaoBasico(len(n)), lambida, naoBasica)
+        min = custoMinimo(cRelativo)
+        if(otimalidade(min, cRelativo)):
+            break
+        y = calculoDeY(basica, A, n, min)
+        passol = passoEL(y, xRelativo)
+        if(passol):
+            passo = passol[1]
+            l = passol[2]
+        else:
+            possivel=False
+            break
+        troca(A, basica, b, naoBasica, n, l, min)
+        it += 1
+    if(possivel):
+        print(f'{xRelativo}, {valorFuncao()}')
+    else:
+        print("problema nao tem solucao otima finita")
