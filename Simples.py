@@ -1,5 +1,6 @@
 # Integrantes: Matheus Partika Orzechowski, Jose Leonardo Machado Pães, Samuel Piasinho
 from tkinter.tix import MAX
+from xmlrpc.client import MAXINT
 import numpy as np
 
 
@@ -11,20 +12,60 @@ def leitura():
     # ler funcao z,
     # ler matriz das funcoes (multiplicador das variaveis basicas e nao basicas),
     # ler matriz b (um vetor / uma coluna)
-    lin = 0
-    funcao_grudada = []
-    funcao = []
-
-    print('leituras de meu pau: ')
-
-    print('linhas da matriz A')
-    lin = int(input())
-
-    for i in range(lin):
-        print("digite a funcao boco: ")
-        funcao_grudada.append(input())
-        funcao.append(funcao_grudada[i].split(' '))
-    return funcao
+    A = []
+    B = []
+    b = []
+    n = []
+    z = []
+    diff = []
+    z = input("digite a funcao z separada por espacos (2 -4 3): ")
+    z = z.split(' ')
+    for i in range(len(z)):
+        z[i] = int(z[i])
+    num = int(input("qual o numero de funcoes? "))
+    print("insira as funcoes separadas por enter")
+    # gera A (matriz das funcoes) e B (matriz dos termos independentes)
+    for i in range(num):
+        new = input(
+            f"digite a funcao {i+1} separada por espacos (2 -4 3 <= 5): ").split()
+        independente = False
+        lin = []
+        for j in range(len(new)):
+            if(new[j] == '<=' or new[j] == '>=' or new[j] == '='):
+                diff.append(new[j])
+                independente = True
+            elif(independente):
+                B.append(float(new[j]))
+            else:
+                lin.append(float(new[j]))
+        A.append(lin)
+    # completa A
+    for i in range(len(diff)):
+        valor = 0
+        if(diff[i] == '<='):
+            valor = 1
+        elif(diff[i] == '>='):
+            valor = -1
+        for j in range(len(diff)):
+            if(j == i):
+                A[i].append(valor)
+            else:
+                A[i].append(0)
+    # completa z
+    for i in range(len(diff)):
+        z.append(0)
+    # gera o vetor basico
+    for i in range(1, len(A)+1):
+        b.append(i)
+    # gera o vetor nao basico
+    for i in range(len(A)+1, len(z)+1):
+        n.append(i)
+    """ print(f'A = {A}')
+    print(f'B = {B}')
+    print(f'b = {b}')
+    print(f'n = {n}')
+    print(f'z = {z}') """
+    return A, B, [3,4,5], [1,2], z
 
 
 def attBasica(A, b):
@@ -33,7 +74,7 @@ def attBasica(A, b):
     for i in range(len(A)):
         lin = []
         for j in b:
-            lin.append(A[i][j])
+            lin.append(A[i][j-1])
         basica.append(lin)
     return basica
 
@@ -44,7 +85,7 @@ def attNaoBasica(A, n):
     for i in range(len(A)):
         lin = []
         for j in n:
-            lin.append(A[i][j])
+            lin.append(A[i][j-1])
         naoBasica.append(lin)
     return naoBasica
 
@@ -55,15 +96,33 @@ def attNaoBasica(A, n):
     # Passo 1 : calculo da solucao basica
 
 
+def multMatVet(A, B):
+    c = []
+    tam = len(A)
+    # criacao do c
+    for i in range(tam):
+        c.append(0)
+    # multiplicacao em si
+    for i in range(tam):
+        for k in range(tam):
+            c[i] += A[i][k] * B[k]
+    return c
+
+
 def XRelativoBasico(mat, b):
     xRelativo = []
     tam = len(mat)
     # calcula a inversa
     inv = inversa(mat)
+    if(inv[0]):
+        inv = inv[1]
+    else:
+        return False
     # multiplica inversa por vetor de termos independentes
-    for i in range(tam):
+    """ for i in range(tam):
         for k in range(tam):
-            xRelativo[i] += inv[i][k] * b[k]
+            xRelativo[i] += inv[i][k] * b[k] """
+    xRelativo = multMatVet(inv, b)
     return xRelativo
 
 
@@ -80,10 +139,11 @@ def XRelativoNaoBasico(tam):
 
 
 def custoBasico(z, b):
-    custoB=[]
+    custoB = []
     for i in b:
-        custoB.append(z[i])
+        custoB.append(z[i-1])
     return custoB
+
 
 def swap(a, b):
     aux = b
@@ -139,6 +199,19 @@ def transposta(mat):
     return transp
 
 
+def transporVet(vet):
+    transp = []
+    tam = len(vet)
+    # criacao inicial da transposta
+    for i in range(tam):
+        transp.append(0)
+    # calculo da transposta
+    for i in range(tam):
+        for j in range(tam):
+            transp[j] = vet[i]
+    return transp
+
+
 def multMat(A, B):
     c = []
     tam = len(A)
@@ -158,22 +231,32 @@ def multMat(A, B):
 
 
 def calculaLambda(B, c):
-    inv = inversa(B)
-    transp = transposta(c)
-    lambida = multMat(inv, transp)
+    da, inv = inversa(B)
+    transp = transporVet(c)
+    lambida = multMatVet(inv, transp)
     return lambida
 
     # 2.2 : custos relativos
 
 
+def multVet(A, B):
+    c = 0
+    tam = len(A)
+    # multiplicacao em si
+    for i in range(tam):
+        for k in range(len(B)):
+            c += A[i] * B[k]
+    return c
+
+
 def custoRelativo(custo_naoB, lamb, nao_basico):
     custo_relativo_naoB = []
+    naoBasico = transporVet(nao_basico)
     tam = len(custo_naoB)
-    naoBasico = transposta(nao_basico)
     # itera pela coluna
     for i in range(tam):
         custo_relativo_naoB.append(
-            custo_naoB[i] - multMat(lamb, transposta(naoBasico[i])))
+            custo_naoB[i] - multVet(lamb, naoBasico[i]))
     return custo_relativo_naoB
 
     # 2.3 : determinação da variavel a entrar na base
@@ -198,12 +281,12 @@ def otimalidade(k, custoRelativo):
 
 
 def calculoDeY(B, A, n, k):
-    inv = inversa(B)
+    da, inv = inversa(B)
     a = []
     # coluna k da matriz nao basica
     for i in range(len(A)):
-        a.append(A[i][n[k]])
-    y = multMat(inv, a)
+        a.append(A[i][n[k]-1])
+    y = multMatVet(inv, a)
     return y
 
     # Passo 5 : determinacao do passo e variavel a sair da base
@@ -221,8 +304,8 @@ def passoEL(y, xRelativo):
     # calculo do vetor das divisoes
     vet = []
     for i in range(len(y)):
-        if(y <= 0):
-            vet.append(MAX)
+        if(y[i] <= 0):
+            vet.append(MAXINT)
             continue
         vet.append(xRelativo[i]/y[i])
     # selecao do passo
@@ -238,14 +321,16 @@ def troca(A, B, b, N, n, l, k):
     swap(b[l], n[k])
     B = attBasica(A, b)
     N = attNaoBasica(A, n)
-    return
+    return B, b, N, n
 
 
 # 3 : Calcule o valor da função objetivo
 
-def valorFuncao(z, mat):
-
-    return
+def valorFuncao(z, x):
+    resultado=0
+    for i in range(len(x)):
+        resultado+=z[i]*x[i]
+    return resultado
 
 
 # main
@@ -254,9 +339,12 @@ def main():
     basica = attBasica(A, b)
     naoBasica = attNaoBasica(A, n)
     it = 0
-    possivel=True
+    possivel = True
     while(True and it < 10):
         xRelativo = XRelativoBasico(basica, B)
+        if(xRelativo == False):
+            possivel = False
+            break
         lambida = calculaLambda(basica, custoBasico(z, b))
         cRelativo = custoRelativo(
             XRelativoNaoBasico(len(n)), lambida, naoBasica)
@@ -269,11 +357,15 @@ def main():
             passo = passol[1]
             l = passol[2]
         else:
-            possivel=False
+            possivel = False
             break
-        troca(A, basica, b, naoBasica, n, l, min)
+        basica, b, naoBasica, n = troca(A, basica, b, naoBasica, n, l, min)
         it += 1
+    print()
     if(possivel):
-        print(f'{xRelativo}, {valorFuncao()}')
+        print(f'{xRelativo},\n{b},\n {valorFuncao(z, xRelativo)}')
     else:
-        print("problema nao tem solucao otima finita")
+        print("problema nao tem solucao otima finita ou gera uma matriz sem inversa")
+
+
+main()
