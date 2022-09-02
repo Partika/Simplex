@@ -20,7 +20,16 @@ def leitura():
     z = input("digite a funcao z separada por espacos (2 -4 3): ")
     z = z.split(' ')
     for i in range(len(z)):
-        z[i] = int(z[i])
+        z[i] = float(z[i])
+    maxMin = 0
+    while(True):
+        maxMin = input('digite min para minimizar ou max para maximizar')
+        if(maxMin == 'min' or maxMin == 'max'):
+            break
+    if(maxMin == 'max'):
+        for i in range(len(z)):
+            z[i] = z[i]*-1
+    print(z)
     num = int(input("qual o numero de funcoes? "))
     print("insira as funcoes separadas por enter")
     # gera mat (matriz das funcoes) e B (matriz dos termos independentes)
@@ -54,17 +63,27 @@ def leitura():
     for i in range(len(diff)):
         z.append(0)
     # gera o vetor basico
-    for i in range(1, len(mat)+1):
-        b.append(i)
-    # gera o vetor nao basico
-    for i in range(len(mat)+1, len(z)+1):
+    for i in range(0, len(z)):
         n.append(i)
+        if i < num:
+            b.append(i)
+    # gera o vetor nao basico
+    for i in range(len(b)):
+        n.remove(b[i])
+    # arruma as basicas para ter inversa
+    for i in range(num,len(z)):
+        if(inversa(attSubMatriz(mat,b))):
+            break
+        n.append(b[num-1])
+        b[num-1]=i
+        n.remove(i)
+        n.sort()
     # print(f'mat = {mat}')
     # print(f'B = {B}')
     # print(f'b = {b}')
     # print(f'n = {n}')
     # print(f'z = {z}')
-    return mat, B, [3, 4, 5], [1, 2], z
+    return mat, B, b, n, z
 
 
 def attSubMatriz(mat, v):
@@ -73,7 +92,7 @@ def attSubMatriz(mat, v):
     for i in range(len(mat)):
         lin = []
         for j in v:
-            lin.append(mat[i][j-1])
+            lin.append(mat[i][j])
         subMatriz.append(lin)
     #print(f'subMatriz: {subMatriz}')
     return subMatriz
@@ -90,16 +109,16 @@ def attSubMatriz(mat, v):
 def multMatVet(A, v):
     c = []
     tam = len(A)
-    print(f'A={A}')
+    # print(f'A={A}')
     # criacao do c
     for i in range(tam):
         c.append(0)
     # multiplicacao em si
     for i in range(tam):
         for k in range(tam):
-            print(f'{c[i]} += {A[i][k]} * {v[k]}')
+            #print(f'{c[i]} += {A[i][k]} * {v[k]}')
             c[i] += A[i][k] * v[k]
-    print(f'resultado da multiplicacao: {c}')
+    #print(f'resultado da multiplicacao: {c}')
     return c
 
 
@@ -120,7 +139,7 @@ def custoBasico(z, b):
     #print("++ Entrando na funcao do custo basico ++")
     custoB = []
     for i in b:
-        custoB.append(z[i-1])
+        custoB.append(z[i])
     #print(f"custo basico: {custoB}")
     #print("++ Saindo da funcao do custo basico ++")
     return custoB
@@ -182,12 +201,12 @@ def multMat(A, B):
 
 
 def calculaLambda(B, c):
-    print("++ Entrando na funcao da Lambda ++")
-    print(f"inv: {B}")
-    print(f"custo transposto: {c}")
+    #print("++ Entrando na funcao da Lambda ++")
+    #print(f"inv: {B}")
+    #print(f"custo transposto: {c}")
     lambida = multMatVet(B, c)
-    print(f"lambda: {lambida}")
-    print("++ Saindo da funcao da Lambda ++")
+    #print(f"lambda: {lambida}")
+    #print("++ Saindo da funcao da Lambda ++")
     return lambida
 
     # 2.2 : custos relativos
@@ -208,18 +227,19 @@ def multVet(A, B):
 
 
 def custoRelativo(custo_naoB, lamb, nao_basico):
-    #print("++ Entrando na funcao do custo relativo ++")
+    # print("++ Entrando na funcao do custo relativo ++")
     custo_relativo_naoB = []
     naoBasico = transposta(nao_basico)
-    #print(f'matriz nao basica transposta: {naoBasico}')
+    # print(f'matriz nao basica transposta: {naoBasico}')
     tam = len(custo_naoB)
     # itera pela coluna
     for i in range(tam):
-        print(f'naoBasico[{i}]: {naoBasico[i]}')
+        # print(f'custo_naoB[{i}]: {custo_naoB[i]}')
+        # print(f'naoBasico[{i}]: {naoBasico[i]}')
         custo_relativo_naoB.append(
             custo_naoB[i] - multVet(lamb, naoBasico[i]))
-    #print(f"custo relativo nao basico: {custo_relativo_naoB}")
-    #print("++ Saindo da funcao do custo relativo ++")
+    # print(f"custo relativo nao basico: {custo_relativo_naoB}")
+    # print("++ Saindo da funcao do custo relativo ++")
     return custo_relativo_naoB
 
     # 2.3 : determinação da variavel a entrar na base
@@ -246,7 +266,7 @@ def otimalidade(k, custoRelativo):
 def calculoDeY(B, naoBasica, k):
     # coluna k da matriz nao basica
     naoBasicaT = transposta(naoBasica)
-    print(f'naoBasicaT: {naoBasicaT[k]}')
+    #print(f'naoBasicaT: {naoBasicaT[k]}')
     y = multMatVet(B, naoBasicaT[k])
     return y
 
@@ -307,7 +327,7 @@ def troca(mat, B, b, N, n, l, k):
 def valorFuncao(z, x, b):
     resultado = 0
     for i in range(len(x)):
-        resultado += z[b[i]-1]*x[i]
+        resultado += z[b[i]]*x[i]
     return resultado
 
 
@@ -315,39 +335,39 @@ def valorFuncao(z, x, b):
 def main():
     mat, B, b, n, z = leitura()
     basica = attSubMatriz(mat, b)
-    #print(f'basica: {basica}')
+    print(f'basica: {basica}')
     naoBasica = attSubMatriz(mat, n)
-    #print(f'nao basica: {naoBasica}')
+    print(f'nao basica: {naoBasica}')
     print()
     it = 0
-    maxit = 3
+    maxit = 10
     possivel = True
     while(True and it < maxit):
         print(f"---------------IT {it+1}-----------")
         inversaBasica = inversa(basica)
-        if(not(inversaBasica[0])):
+        if(not(inversaBasica)):
             possivel = False
             break
         else:
             inversaBasica = inversaBasica[1]
-        #print(f'inversa: {inversaBasica}, independentes: {B}')
+        # print(f'inversa: {inversaBasica}')
         xRelativo = XRelativoBasico(inversaBasica, B)
         #print(f'xrel: {xRelativo}')
         lambida = calculaLambda(inversaBasica, custoBasico(z, b))
-        #print(f'lambda: {lambida}')
+        # print(f'lambda: {lambida}')
         cRelativo = custoRelativo(
             custoBasico(z, n), lambida, naoBasica)
-        print(f'crel: {cRelativo}')
+        # print(f'crel: {cRelativo}')
         # comentei ate aqui
         min = custoMinimo(cRelativo)
-        #print(f'k: {min}')
+        # print(f'k: {min}')
         if(otimalidade(min, cRelativo)):
             print("otimo")
             break
         print("nao otimo")
-        print(f'{min} {n} {cRelativo}')
+        #print(f'{min} {n} {cRelativo}')
         y = calculoDeY(inversaBasica, naoBasica, min)
-        print(f'xrel:{xRelativo},\n y: {y}')
+        #print(f'xrel:{xRelativo},\n y: {y}')
         l = CalculoDeL(y, xRelativo)
         #print(f'passo, l: {passol}')
         if(l):
