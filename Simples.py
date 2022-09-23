@@ -275,7 +275,7 @@ def custoMinimo(CN):
 
 def otimalidade(k, custoRelativo):
     # se k maior que 0, ta tudo bem
-    if custoRelativo[k] > 0:
+    if custoRelativo[k] >= 0:
         return True
     else:
         return False
