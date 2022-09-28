@@ -19,6 +19,7 @@ def leitura():
     diff = []
     z = input("digite a funcao z separada por espacos (2 -4 3): ")
     z = z.split(' ')
+    minMax=input('digite min para minimizar e max para maximizar')
     for i in range(len(z)):
         z[i] = float(z[i])
     maxMin = 0
@@ -65,6 +66,17 @@ def leitura():
     # gera o vetor basico
     for i in range(0, len(z)):
         n.append(i)
+    """ print(f'mat = {mat}')
+    print(f'B = {B}')
+    print(f'b = {b}')
+    print(f'n = {n}')
+    print(f'z = {z}') """
+    return mat, B, [3,5,4], [1,2], z, minMax
+
+
+def attBasica(mat, b):
+    # calculo da matriz basica
+    basica = []
         if i < num:
             b.append(i)
     # gera o vetor nao basico
@@ -255,7 +267,7 @@ def custoMinimo(CN):
 
 def otimalidade(k, custoRelativo):
     # se k maior que 0, ta tudo bem
-    if custoRelativo[k] > 0:
+    if custoRelativo[k] >= 0:
         return True
     else:
         return False
@@ -333,11 +345,15 @@ def valorFuncao(z, x, b):
 
 # main
 def main():
-    mat, B, b, n, z = leitura()
-    basica = attSubMatriz(mat, b)
-    print(f'basica: {basica}')
-    naoBasica = attSubMatriz(mat, n)
-    print(f'nao basica: {naoBasica}')
+    mat, B, b, n, z , minMax= leitura()
+    func=z
+    if(minMax=='max'):
+        for i in z: i*=-1
+    
+    basica = attBasica(mat, b)
+    #print(f'basica: {basica}')
+    naoBasica = attNaoBasica(mat, n)
+    #print(f'nao basica: {naoBasica}')
     print()
     it = 0
     maxit = 10
@@ -381,7 +397,7 @@ def main():
     print()
     if(possivel):
         print(
-            f'xrel: {xRelativo},\nb: {b},\nz(x): {valorFuncao(z, xRelativo, b)}')
+            f'xrel: {xRelativo},\nb: {b},\nz(x): {valorFuncao(func, xRelativo, b)}')
     else:
         print("problema nao tem solucao otima finita ou gera uma matriz sem inversa")
 
