@@ -4,31 +4,31 @@ import numpy as np
 # funcoes extras necessarias
 
 
-def Multiplicacao_matrizes(matrizA: list, matrizB: list):
+def Multiplicacao_matrizes(matrizA: list, matrizB: list)->float:
     # print(matrizA, '*', matrizB, '=', end=' ')
     matrizC = np.matmul(matrizA, Transposta(matrizB))
     # print(matrizC)
     return matrizC
 
 
-def Multiplicacao_vetores(vetorA: list, vetorB: list):
+def Multiplicacao_vetores(vetorA: list, vetorB: list)->float:
     resultado = np.dot(vetorA, vetorB)
     return resultado
 
 
-def Transposta(matriz: list):
+def Transposta(matriz: list)->list:
     return np.transpose(matriz)
 
 
-def Menor_matriz(m: list, i: int, j: int):
+def Menor_matriz(m: list, i: int, j: int)->list:
     return [row[:j] + row[j+1:] for row in (m[:i]+m[i+1:])]
 
 
-def Determinante(m: list):
+def Determinante(m: list)->float:
     return np.linalg.det(m)
 
 
-def Inversa__(m: list):
+def Inversa__(m: list)->float:
     determinate = Determinante(m)
     # caso especial 2 por 2:
     if len(m) == 2:
@@ -50,7 +50,7 @@ def Inversa__(m: list):
     return cofatores
 
 
-def Inversa(matrizA: list, independentes: list):
+def Inversa(matrizA: list, independentes: list)->float:
     n = len(matrizA)
 
     # print(matrizA)
@@ -106,11 +106,11 @@ def Inversa(matrizA: list, independentes: list):
     return inv
 
 
-def Inversa_(matriz: list, independentes: list):
+def Inversa_(matriz: list, independentes: list)->float:
     return np.linalg.inv(matriz)
 
 
-def Cria_submatriz(matrizA: list, vetorX: list):
+def Cria_submatriz(matrizA: list, vetorX: list)->float:
     submatriz = []
     for j in range(len(matrizA)):
         linha = []
@@ -132,7 +132,7 @@ def Cria_submatriz(matrizA: list, vetorX: list):
 #   x transposto nao basico = (xN1, xN2, ..., xNn−m ).
 
 
-def Separacao_da_matriz(funcaoZ: list, funcoes: list):
+def Separacao_da_matriz(funcaoZ: list, funcoes: list)->list:
     # definicao da existencia de variaveis de folga
     inequacoes = []
     for i in range(len(funcoes)):
@@ -199,7 +199,7 @@ def Separacao_da_matriz(funcaoZ: list, funcoes: list):
 #       x relativo nao basico ← 0
 # !!!(devido a analises, o x relativo nao basico nao foi feito, afinal ele nao aparece mais)!!!
 
-def Calculo_x_relativo(BInversa: list, b: list):
+def Calculo_x_relativo(BInversa: list, b: list)->float:
     xRelativoBasico = Multiplicacao_matrizes(BInversa, np.matrix(b))
     # print(xRelativoBasico)
     return xRelativoBasico
@@ -214,14 +214,14 @@ def Calculo_x_relativo(BInversa: list, b: list):
 #           (equivalentemente, resolva o sistema B transposto * λ = cB)
 
 
-def Custo(funcaoZ: list, variaveis: list):
+def Custo(funcaoZ: list, variaveis: list)->float:
     custoBasico = [0]*len(variaveis)
     for i in range(len(custoBasico)):
         custoBasico[i] = funcaoZ[variaveis[i]]
     return custoBasico
 
 
-def Calcula_lambda(custoBasico: list, basicaInversa: list):
+def Calcula_lambda(custoBasico: list, basicaInversa: list)->float:
     lambdaSimplex = Multiplicacao_matrizes(basicaInversa, custoBasico)
     return lambdaSimplex
 
@@ -230,7 +230,7 @@ def Calcula_lambda(custoBasico: list, basicaInversa: list):
 #           c relativo nao basico j ← c nao basico j − (λ transposto * a nao bascio j)
 #           j = 1, 2, ..., n − m
 
-def Custos_Relativos(lambdaSimplex: list, custoNaoBasico: list, matrizNaoBasica: list):
+def Custos_Relativos(lambdaSimplex: list, custoNaoBasico: list, matrizNaoBasica: list)->float:
     naoBasicaTransposta = Transposta(matrizNaoBasica)
     # print(custoNaoBasico)
     # print(naoBasicaTransposta)
@@ -246,7 +246,7 @@ def Custos_Relativos(lambdaSimplex: list, custoNaoBasico: list, matrizNaoBasica:
 #           c relativo nao basico k ← min{c relativo nao basico j, j = 1, 2, ..., n − m}
 #           (a variavel x nao basico k entra na base)
 
-def Calcula_k(custoRelativoNaoBasico: list):
+def Calcula_k(custoRelativoNaoBasico: list)->int:
     # print(custoRelativoNaoBasico)
     menor = min(custoRelativoNaoBasico)
     return custoRelativoNaoBasico.index(menor)
@@ -258,7 +258,7 @@ def Calcula_k(custoRelativoNaoBasico: list):
 #       Se c relativo nao basico k ≥ 0, ent˜ao: pare {solu¸c˜ao na itera¸c˜ao atual ´e ´otima}
 
 
-def Otimalidade(custoRelativoNaoBasico: list, k: int):
+def Otimalidade(custoRelativoNaoBasico: list, k: int)->bool:
     if(custoRelativoNaoBasico[k] >= 0):
         return True
     else:
@@ -270,7 +270,7 @@ def Otimalidade(custoRelativoNaoBasico: list, k: int):
 #       (equivalentemente, resolva o sistema: B*y = a nao basico k)
 
 
-def Direcao_simplex(BasicaInversa: list, matrizA: list, k: int, naoBasicas: list):
+def Direcao_simplex(BasicaInversa: list, matrizA: list, k: int, naoBasicas: list)->float:
     colunaK = [0]*len(matrizA)
     for i in range(len(matrizA)):
         colunaK[i] = matrizA[i][naoBasicas[k]]
@@ -287,7 +287,7 @@ def Direcao_simplex(BasicaInversa: list, matrizA: list, k: int, naoBasicas: list
 #       (a variavel xBl sai da base)
 
 
-def Calcula_l(y: list, xRelativoBasico: list):
+def Calcula_l(y: list, xRelativoBasico: list)->int:
 
     # se y <= 0
     seguro = False
@@ -319,7 +319,7 @@ def Calcula_l(y: list, xRelativoBasico: list):
 #       Retorne ao Passo 1
 #       {fim da itera¸c˜ao simplex}
 
-def Troca_k_l(basicas: list, naoBasicas: list, k: int, l: int):
+def Troca_k_l(basicas: list, naoBasicas: list, k: int, l: int)->list:
     aux = basicas[l]
     basicas[l] = naoBasicas[k]
     naoBasicas[k] = aux
@@ -328,17 +328,17 @@ def Troca_k_l(basicas: list, naoBasicas: list, k: int, l: int):
 
 # 3. Calcule o valor da fun¸c˜ao objetivo f(x) =⇒ FIM.
 
-def Valor_funcao_(funcaoZ: list, xRelativoBasico: list, basicas: list):
+def Valor_funcao_(funcaoZ: list, xRelativoBasico: list, basicas: list)->float:
     funcaoAdaptada = []
     for i in basicas:
         funcaoAdaptada.append([funcaoZ[i]])
     return Multiplicacao_vetores(funcaoAdaptada, xRelativoBasico)
 
 
-def Valor_funcao(funcaoZ: list, xRelativoBasico: list, basicas: list):
+def Valor_funcao(funcaoZ: list, xRelativoBasico: list, basicas: list)->float:
     resultado = 0
     for i in range(len(xRelativoBasico)):
-        resultado += funcaoZ[basicas[i]-1]*xRelativoBasico[i]
+        resultado += funcaoZ[basicas[i]]*xRelativoBasico[i]
     return resultado
 
 
@@ -348,7 +348,7 @@ def Leitura():
     funcaoZ = input("digite a funcao z separada por espacos (2 -4 3): ")
     funcaoZ = funcaoZ.split(' ')
     for i in range(len(funcaoZ)):
-        funcaoZ[i] = int(funcaoZ[i])
+        funcaoZ[i] = float(funcaoZ[i])
     minMax = input('digite min para minimizar e max para maximizar')
     numeroFuncoes = int(input("qual o numero de funcoes? "))
     print("insira as funcoes separadas por enter")
@@ -373,9 +373,9 @@ def main():
     funcaoFin = funcaoZ
     if(minMax == 'max'):
         for i in funcaoZ:
-            i += -1
+            i *= -1
     it = 1
-    maxit = 5
+    maxit = 10
     solucaoOtima = []
     while(it < maxit):
         print()
