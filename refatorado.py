@@ -6,9 +6,7 @@ import numpy as np
 
 
 def Multiplicacao_matrizes(matrizA: list, matrizB: list) -> float:
-    # print(matrizA, '*', matrizB, '=', end=' ')
     matrizC = np.matmul(matrizA, matrizB)
-    # print(matrizC)
     return matrizC
 
 
