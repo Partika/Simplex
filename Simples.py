@@ -19,6 +19,7 @@ def leitura():
     diff = []
     z = input("digite a funcao z separada por espacos (2 -4 3): ")
     z = z.split(' ')
+    minMax=input('digite min para minimizar e max para maximizar')
     for i in range(len(z)):
         z[i] = int(z[i])
     num = int(input("qual o numero de funcoes? "))
@@ -64,7 +65,7 @@ def leitura():
     print(f'b = {b}')
     print(f'n = {n}')
     print(f'z = {z}') """
-    return mat, B, [1, 2, 4], [3, 5], z
+    return mat, B, [3,5,4], [1,2], z, minMax
 
 
 def attBasica(mat, b):
@@ -339,7 +340,11 @@ def valorFuncao(z, x, b):
 
 # main
 def main():
-    mat, B, b, n, z = leitura()
+    mat, B, b, n, z , minMax= leitura()
+    func=z
+    if(minMax=='max'):
+        for i in z: i*=-1
+    
     basica = attBasica(mat, b)
     #print(f'basica: {basica}')
     naoBasica = attNaoBasica(mat, n)
@@ -390,7 +395,7 @@ def main():
     print()
     if(possivel):
         print(
-            f'xrel: {xRelativo},\nb: {b},\nz(x): {valorFuncao(z, xRelativo, b)}')
+            f'xrel: {xRelativo},\nb: {b},\nz(x): {valorFuncao(func, xRelativo, b)}')
     else:
         print("problema nao tem solucao otima finita ou gera uma matriz sem inversa")
 
