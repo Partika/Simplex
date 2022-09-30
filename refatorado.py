@@ -24,9 +24,12 @@ def Determinante(m: list) -> float:
 
 
 def Inversa(matrizA: list, independentes: list) -> float:
+    # determinante !=0?
+    if(Determinante(matrizA)==0):
+        return False
+    
+    
     n = len(matrizA)
-
-    # print(matrizA)
 
     inv = []
     for i in range(n):
@@ -337,6 +340,7 @@ def main():
     it = 1
     maxit = 10
     solucaoOtima = []
+    deu=True
     while(it < maxit):
         print()
         independentes = indFixo
@@ -344,6 +348,9 @@ def main():
         matrizBasica = Cria_submatriz(matrizA, basicas)
         matrizNaoBasica = Cria_submatriz(matrizA, naoBasicas)
         matrizBasicaInversa, independentes = Inversa(matrizBasica, independentes)
+        if(not(matrizBasicaInversa)):
+            deu=False
+            break
         
         xRelativo = Calculo_x_relativo(matrizBasicaInversa, independentes)
 
@@ -372,10 +379,12 @@ def main():
         it += 1
     # fim do laco de repeticao simplex
 
-    print("A solucao factivel otima eh:")
-    for i in range(len(solucaoOtima)):
-        print(f'x{basicas[i]} = {solucaoOtima[i]}, ', end=' ')
-    print(f'z = {Valor_funcao(funcaoFin, solucaoOtima, basicas)}')
-
+    if(deu):
+        print("A solucao factivel otima eh:")
+        for i in range(len(solucaoOtima)):
+            print(f'x{basicas[i]} = {solucaoOtima[i]}, ', end=' ')
+        print(f'z = {Valor_funcao(funcaoFin, solucaoOtima, basicas)}')
+    else:
+        print('Em algum momento nao deu para fazer a inversa porque o determinante deu 0')
 
 main()
