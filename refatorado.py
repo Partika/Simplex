@@ -25,10 +25,9 @@ def Determinante(m: list) -> float:
 
 def Inversa(matrizA: list, independentes: list) -> float:
     # determinante !=0?
-    if(Determinante(matrizA)==0):
+    if(Determinante(matrizA) == 0):
         return False
-    
-    
+
     n = len(matrizA)
 
     inv = []
@@ -50,7 +49,7 @@ def Inversa(matrizA: list, independentes: list) -> float:
                 break
 
             j = i
-            
+
             # se trocar o pivo e os independentes da errado
             # temp = independentes[j]
             # independentes[j] = independentes[j+c]
@@ -84,7 +83,7 @@ def Inversa(matrizA: list, independentes: list) -> float:
             for j in range(n):
                 matrizA[i][j] *= p
                 inv[i][j] *= p
-    
+
     return inv, independentes
 
 
@@ -117,7 +116,8 @@ def Cria_submatriz(matrizA: list, vetorX: list) -> float:
 def Separacao_da_matriz(funcaoZ: list, funcoes: list) -> list:
     # definicao da existencia de variaveis de folga
     inequacoes = []
-    for i in range(len(funcoes)):
+    tam = len(funcoes)
+    for i in range(tam):
         condicao = funcoes[i][-2]
         if condicao != '=':
             funcaoZ.append(0.0)
@@ -131,9 +131,10 @@ def Separacao_da_matriz(funcaoZ: list, funcoes: list) -> list:
 
     # inicio do aumento da matriz A
     matrizA = []
-    for i in range(len(funcoes)):
+    for i in range(tam):
         linha = funcoes[i][:-2]
-        for j in range(len(inequacoes)):
+        tam2 = len(inequacoes)
+        for j in range(tam2):
             if(i == j):
                 linha.append(inequacoes[j])
             else:
@@ -144,10 +145,9 @@ def Separacao_da_matriz(funcaoZ: list, funcoes: list) -> list:
     # inicio da definicao basicas e nao basicas
     basicas = []
     naoBasicas = []
-    maxBasicas = len(funcoes)
-    tam = len(funcaoZ)
-    for i in range(tam-1, -1, -1):
-        if(i < maxBasicas-1):
+    tam3 = len(funcaoZ)
+    for i in range(tam3):
+        if(i < tam3-tam):
             naoBasicas.append(i)
         else:
             basicas.append(i)
@@ -157,7 +157,7 @@ def Separacao_da_matriz(funcaoZ: list, funcoes: list) -> list:
 
     # inicio da criacao da matriz de termos independentes
     independentes = []
-    for i in range(len(funcoes)):
+    for i in range(tam):
         independentes.append(funcoes[i][-1])
     # fim da criacao da matriz de termos independentes
 
@@ -333,25 +333,27 @@ def main():
         funcaoZ, funcoes)
     indFixo = deepcopy(independentes)
     funcaoFin = deepcopy(funcaoZ)
-    tam=len(funcaoZ)
+    tam = len(funcaoZ)
     if(minMax == 'max'):
         for i in range(tam):
             funcaoZ[i] *= -1
     it = 1
     maxit = 10
     solucaoOtima = []
-    deu=True
+    deu = True
     while(it < maxit):
         print()
         independentes = indFixo
         print('it: ', it)
         matrizBasica = Cria_submatriz(matrizA, basicas)
         matrizNaoBasica = Cria_submatriz(matrizA, naoBasicas)
-        matrizBasicaInversa, independentes = Inversa(matrizBasica, independentes)
-        if(not(matrizBasicaInversa)):
-            deu=False
+        # print('basica: ',matrizBasica)
+        matrizBasicaInversa, independentes = Inversa(
+            matrizBasica, independentes)
+        if(matrizBasicaInversa == False):
+            deu = False
             break
-        
+
         xRelativo = Calculo_x_relativo(matrizBasicaInversa, independentes)
 
         custoBasico = Custo(funcaoZ, basicas)
@@ -367,13 +369,14 @@ def main():
         if(Otimalidade(custoRelativoNaoBasico, k)):
             print("Otimo!")
             solucaoOtima = xRelativo
+            deu = True
             break
         print("Nao otimo!")
 
         y = Direcao_simplex(matrizBasicaInversa, matrizA, k, naoBasicas)
 
         l = Calcula_l(y, xRelativo)
-        if(l == False):
+        if(isinstance(l, bool) and l == False):
             deu = False
             break
 
@@ -384,10 +387,12 @@ def main():
 
     if(deu):
         print("A solucao factivel otima eh:")
-        for i in range(len(solucaoOtima)):
+        tam = len(solucaoOtima)
+        for i in range(tam):
             print(f'x{basicas[i]} = {solucaoOtima[i]}, ', end=' ')
         print(f'z = {Valor_funcao(funcaoFin, solucaoOtima, basicas)}')
     else:
-        print('Em algum momento nao deu para fazer a inversa porque o determinante deu 0 \n ou a direcao simplex deu <= 0')
-        
+        print('Em algum momento nao deu para fazer a inversa porque o determinante deu 0\nou a direcao simplex deu <= 0')
+
+
 main()
