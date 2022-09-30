@@ -373,6 +373,9 @@ def main():
         y = Direcao_simplex(matrizBasicaInversa, matrizA, k, naoBasicas)
 
         l = Calcula_l(y, xRelativo)
+        if(l == False):
+            deu = False
+            break
 
         basicas, naoBasicas = Troca_k_l(basicas, naoBasicas, k, l)
 
@@ -385,6 +388,6 @@ def main():
             print(f'x{basicas[i]} = {solucaoOtima[i]}, ', end=' ')
         print(f'z = {Valor_funcao(funcaoFin, solucaoOtima, basicas)}')
     else:
-        print('Em algum momento nao deu para fazer a inversa porque o determinante deu 0')
-
+        print('Em algum momento nao deu para fazer a inversa porque o determinante deu 0 \n ou a direcao simplex deu <= 0')
+        
 main()
